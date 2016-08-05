@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style type="text/css">
+  .no-cards {
+    border: 1px solid #eee;
+    background-color: #f9f9f9;
+    padding:40px;
+  }
+  .no-cards .no-cards-heading {
+    font-size: 1.8em;
+  }
+  .no-cards .no-cards-buttons {
+    margin-top: 10px;
+  }
+</style>
+
+{% if not cards %}
+<div class="no-cards text-center">
+  <div class="no-cards-heading">Looks like you have no scheduled cards <i class="fa fa-frown-o" aria-hidden="true"></i></div>
+  <div class="no-cards-buttons"><a class="btn btn-primary" href="{{ url_for('IndexView:cards_new') }}">Create One Now!</a></div>
+</div>
+{% else %}
+<div class="panel panel-default">
+  <div class="panel-heading">Your Scheduled Cards</div>
+  <div class="list-group">
+    {% for card in cards %}
+    <a href="{{ url_for('IndexView:cards_edit', card_id=card.id) }}" class="list-group-item">
+      <div>{{ card.title }}</div>
+      <div><small class="text-muted"></small></div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

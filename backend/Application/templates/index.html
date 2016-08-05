@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<script src="https://trello.com/1/client.js?key={{ config.get('TRELLO_APP_KEY') }}"></script>
+
+<script type="text/javascript">
+    var authenticationSuccess = function() { 
+        window.location.href = '{{ url_for('IndexView:auth_callback') }}?token=' + Trello.token();
+    }
+    var authenticationFailure = function() { 
+        console.error("Failure :(");
+    };
+    function do_trello_auth() {
+        Trello.authorize({
+          type: 'popup',
+          name: 'Trello Scheduled',
+          persist: false,
+          scope: {
+            read: true,
+            write: true,
+            account: true, },
+          expiration: 'never',
+          success: authenticationSuccess,
+          error: authenticationFailure
+        });
+    }
+</script>
+
+<style type="text/css">
+    .app-intro {
+        margin-top: 100px;
+    }
+</style>
+
+<div class="text-center app-intro">
+    <h2>Trello Scheduled</h2>
+    <div>
+        <p>Schedule trello cards to be created into the future.</p>
+    </div>
+    <button class="btn btn-primary btn-lg" onClick="do_trello_auth()"><i class="fa fa-trello" aria-hidden="true"></i>&nbsp;Login With Trello</button>
+</div>
+{% endblock %}

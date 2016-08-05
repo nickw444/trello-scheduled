@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% macro render_field(field) -%}
+  <div class="form-group">
+    <label for="{{field.id}}">{{ field.label }}</label>
+    {{ field(class_=kwargs.pop('class_', '') + ' form-control', **kwargs) }}
+  </div>
+{%- endmacro %}
+
+{% block content %}
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('.datetimepicker').datetimepicker({
+      defaultDate: moment(),
+    });
+    $('#pageForm').submit(function(e) {
+      $('.convert-on-submit').each(function(k, v) {
+        var val = $(v).val();
+        var newVal = moment(val).format();
+        $(v).val(newVal);
+      });
+    })
+  })
+
+
+</script>
+<form method="POST" id="pageForm">
+  <div class="panel panel-default">
+    <div class="panel-body">
+      {% if form.errors %}
+        <div class="alert alert-danger">
+          <strong>Errors on this page:</strong>
+          <ul>
+          {% for error in form.errors %}
+            <li>
+              <strong>{{ form[error].label }}</strong>:
+              {% if form[error].errors | count > 1 %}
+                <ul>
+                  {% for error in form[error].errors %}
+                  <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                {{ form[error].errors[0] }}
+              {% endif %}
+            </li>
+          {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      {{ form.hidden_tag() }}
+
+      {{ render_field(form.title) }}
+      {{ render_field(form.description) }}
+      <div class="row">
+        <div class="col-xs-12 col-sm-6">
+          {{ render_field(form.board) }}
+          {{ render_field(form.list) }}
+        </div>
+        <div class="col-xs-12 col-sm-6">
+          {{ render_field(form.labels) }}
+          <div class="form-group">
+            <label for="{{form.start.id}}">{{ form.start.label }}</label>
+            <div class='datetimepicker input-group'>
+              {{ form.start(class_='form-control convert-on-submit')}}
+              <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 col-sm-6">
+          <div class="form-group form-inline">
+            <label>Frequency</label>
+            <div>
+              Every {{ form.frequency_val(class_='form-control') }} {{ form.frequency_kind(class_='form-control') }}
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+          {{ render_field(form.due_date) }}
+        </div>
+      </div>
+    </div>
+    <div class="panel-footer">
+      {% if form.delete %}
+        {{ form.delete(class_='btn btn-danger') }}
+      {% endif %}
+      <div class="pull-right">
+        {{ form.save(class_='btn btn-primary') }}
+      </div>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</form>
+{% endblock %}
